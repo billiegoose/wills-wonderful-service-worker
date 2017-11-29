@@ -2,11 +2,14 @@
   "name": "@wmhilton/wills-wonderful-service-worker",
   "version": "0.0.0",
   "description": "ServiceWorker that does stuff",
-  "public": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/wwsw.js",
   "scripts": {
     "clean": "shx mkdir -p dist && shx rm -rf dist/*",
     "build": "shx mkdir -p dist && rollup --output.format=es src/index.js > dist/wwsw.js",
+    "test": "npm run build",
     "docs": "projectz && mos"
   },
   "keywords": [],
