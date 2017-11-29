@@ -1,0 +1,23 @@
+{
+  "name": "@wmhilton/wills-wonderful-service-worker",
+  "version": "0.0.0",
+  "description": "ServiceWorker that does stuff",
+  "public": true,
+  "main": "dist/wwsw.js",
+  "scripts": {
+    "clean": "shx mkdir -p dist && shx rm -rf dist/*",
+    "build": "shx mkdir -p dist && rollup --output.format=es src/index.js > dist/wwsw.js",
+    "docs": "projectz && mos"
+  },
+  "keywords": [],
+  "author": "William Hilton <wmhilton@gmail.com>",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wmhilton/wills-wonderful-service-worker"
+  },
+  "devDependencies": {
+    "rollup": "^0.52.0",
+    "shx": "^0.2.2"
+  }
+}
