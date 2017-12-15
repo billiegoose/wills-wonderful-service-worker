@@ -2,7 +2,7 @@ global = self
 window = global
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 importScripts('https://gundb-git-app-manager.herokuapp.com/gun.js')
-importScripts('https://unpkg.com/isomorphic-git@0.0.24/dist/service-worker-bundle.umd.min.js')
+importScripts('https://unpkg.com/isomorphic-git@0.0.31/dist/service-worker-bundle.umd.min.js')
 import Mime from './mime'
 import { fs, fsReady } from './fs'
 import { rimraf } from './rimraf'
@@ -45,15 +45,16 @@ async function clone ({ref, repo, name}) {
       regarding: {ref, repo, name},
       progress: e.loaded / e.total
     }
-    self.clients.matchAll().then(all => all.map(client => client.postMessage(msg)));
+    global.clients.matchAll({includeUncontrolled: true}).then(all => all.map(client => client.postMessage(msg)));
   }
   
   let dir = name
-  return git(dir)
-    .depth(1)
-    .branch(ref)
-    .onprogress(handleProgress)
-    .clone(`https://cors-buster-jfpactjnem.now.sh/github.com/${repo}`)
+  return git.clone(new git.Git({fs, dir}), {
+    depth: 1,
+    ref: ref,
+    onprogress: handleProgress,
+    url: `https://cors-buster-jfpactjnem.now.sh/github.com/${repo}`
+  })
 }
 
 async function UpdatedDirectoryList (event) {
@@ -66,7 +67,7 @@ async function UpdatedDirectoryList (event) {
         regarding: event.data,
         list: files
       }
-      self.clients.matchAll().then(all => all.map(client => client.postMessage(msg)))
+      self.clients.matchAll({includeUncontrolled: true}).then(all => all.map(client => client.postMessage(msg)))
       resolve()
     })
   })
@@ -119,7 +120,7 @@ self.addEventListener('message', async event => {
           console.log('foo = ', foo)
         )
       })
-      self.clients.matchAll().then(all => all.map(client => client.postMessage(msg)));
+      self.clients.matchAll({includeUncontrolled: true}).then(all => all.map(client => client.postMessage(msg)));
     }).catch(err => {
       let msg = {
         type: 'status',
