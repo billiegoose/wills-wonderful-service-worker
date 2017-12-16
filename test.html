@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WWSW.js</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic@6.4.0/picnic.min.css">
+  </head>
+  <body>
+    <h1>WWSW.js Test Page</h1>
+    <button onclick="registerWWSW()">Register WWSW</button>
+    <button onclick="useComlink()">Use Comlink</button>
+    <script src="https://unpkg.com/comlinkjs@2.3.0/comlink.global.js"></script>
+    <script>
+    function log (str) {
+      var div = document.createElement('h4')
+      div.innerHTML = str
+      document.body.appendChild(div)
+    }
+    async function useComlink () {
+      let worker = (await navigator.serviceWorker.getRegistrations())[0].active
+      let channel = new MessageChannel();
+      worker.postMessage({type: 'comlink/haveaport'}, [channel.port2])
+      // let fs = Comlink.proxy(channel.port1)
+      // console.log(await fs.read('.uuid', 'utf8', Comlink.proxyValue(console.log)))
+      let git = Comlink.proxy(channel.port1)
+      console.log(await git.init({dir: '.'}))
+    }
+    function registerWWSW () {
+      if (!navigator.serviceWorker) {
+        log(`Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser.`)
+      } else {
+        log(`Registering...`)
+        navigator.serviceWorker
+        .register('./dist/wwsw.js')
+        .then((reg) => {
+          log(`Registered.`)
+          reg.addEventListener('updatefound', () => {
+            log(`Update found...`)
+            let newWorker = reg.installing
+            newWorker.addEventListener('statechange', () => {
+              log(newWorker.state)
+              if (newWorker.state === 'activated') {
+                // log('Begin cloning...')
+                // let msg = {
+                //   type: "clone",
+                //   repo: 'wmhilton/nde',
+                //   ref: 'master',
+                //   name: 'nde'
+                // }
+                // newWorker.postMessage(msg)
+                // navigator.serviceWorker.addEventListener('message', event => {
+                //   let data = event.data
+                //   console.log('data =', data)
+                //   if (data.type === 'status') {
+                //     if (data.status === 'complete') {
+                //       window.location = '/nde/'
+                //     } else if (data.status === 'progress') {
+                //       console.log(data.progress)
+                //       let loader = document.getElementById('loader')
+                //       loader.style.color = '#FFF'
+                //       loader.style.background = '#3498db'
+                //       loader.style.width = Math.floor(data.progress * 100) + '%'
+                //       loader.innerHTML = (loader.style.width === '100%' ? 'Checking out master branch...' : loader.style.width)
+                //     } else if (data.status === 'error') {
+                //       alert('Error! ' + data.error.message)
+                //     }
+                //   }
+                // })
+              }
+            })
+          })
+        })
+      }
+    }
+    </script>
+  </body>
+</html>
