@@ -30,6 +30,7 @@
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
     "semantic-release": "^8.2.0",
-    "shx": "^0.2.2"
+    "shx": "^0.2.2",
+    "swivel": "^4.0.3"
   }
 }
