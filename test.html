@@ -19,11 +19,16 @@
     async function useComlink () {
       let worker = (await navigator.serviceWorker.getRegistrations())[0].active
       let channel = new MessageChannel();
-      worker.postMessage({type: 'comlink/haveaport'}, [channel.port2])
-      // let fs = Comlink.proxy(channel.port1)
-      // console.log(await fs.read('.uuid', 'utf8', Comlink.proxyValue(console.log)))
+      worker.postMessage({type: 'comlink/expose', name: 'git'}, [channel.port2])
       let git = Comlink.proxy(channel.port1)
       console.log(await git.init({dir: '.'}))
+      
+      channel = new MessageChannel();
+      worker.postMessage({type: 'comlink/expose', name: 'fs'}, [channel.port2])
+      // let fs = Comlink.proxy(channel.port1)
+      let fs = Comlink.proxy(channel.port1)
+      console.log(await fs.readFile('.uuid', 'utf8'))
+      console.log(await fs.readdir('.'))
     }
     function registerWWSW () {
       if (!navigator.serviceWorker) {
