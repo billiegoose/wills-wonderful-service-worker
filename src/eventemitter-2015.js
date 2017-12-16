@@ -53,25 +53,4 @@ export default class {
   postMessage (namespace, data) {
     this.emit(namespace, data)
   }
-  
-  bind (self) {
-    self.addEventListener('message', event => {
-      let data = event.data
-      if (data.__SENT_FROM_EVENT_EMITTER_2015) {
-        if (data.emit) {
-          this.emit(data.namespace, data.data)
-        } else if (data.on) {
-          
-        } else if (data.off) {
-          
-        } else if (data.once) {
-          
-        }
-      }
-    })
-  }
-  
-  connect (other) {
-    this.others.add(other)
-  }
 }

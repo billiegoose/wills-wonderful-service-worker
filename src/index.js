@@ -3,9 +3,8 @@ window = global
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 importScripts('https://gundb-git-app-manager.herokuapp.com/gun.js')
 importScripts('https://unpkg.com/isomorphic-git@0.0.31/dist/service-worker-bundle.umd.min.js')
-importScripts('https://unpkg.com/comlinkjs@2.3.0/comlink.global.js')
+import { Comlink } from 'comlinkjs'
 import pify from 'pify' // commonjs module
-import swivel from 'swivel'
 import Mime from './mime'
 import { fs, fsReady } from './fs'
 import { rimraf } from './rimraf'
@@ -15,12 +14,6 @@ console.log('fs =', fs)
 console.log('git =', git)
 console.log('OmniPath =', OmniPath)
 console.log('gun =', Gun)
-console.log('swivel =', swivel)
-
-swivel.on('swivel/hello', function handler (ctx, ...data) {
-  console.log(data)
-  swivel.broadcast('swivel/test', {happy: 'hippos'})
-})
 
 let API = {
   fs: pify(fs),
