@@ -7,6 +7,7 @@ import { Comlink } from 'comlinkjs'
 import pify from 'pify' // commonjs module
 import Mime from './mime'
 import { fs, fsReady } from './fs'
+import { useMyFilesystem } from './git'
 import { rimraf } from './rimraf'
 import { serve } from './serve'
 global.fs = fs
@@ -18,17 +19,18 @@ console.log('gun =', Gun)
 let API = {
   fs: pify(fs),
   Events: fs.Events,
-  git: {
-    async init (args) {
-      let {dir, gitdir, workdir} = args
-      console.log({fs, dir, gitdir, workdir}, args)
-      return git.init(new git.Git({fs, dir, gitdir, workdir}), args)
-    },
-    async clone (args) {
-      let {dir, gitdir, workdir} = args
-      return git.clone(new git.Git({fs, dir, gitdir, workdir}), args)
-    }
-  }
+  git: useMyFilesystem(git)
+  // git: {
+  //   async init (args) {
+  //     let {dir, gitdir, workdir} = args
+  //     console.log({fs, dir, gitdir, workdir}, args)
+  //     return git.init(new git.Git({fs, dir, gitdir, workdir}), args)
+  //   },
+  //   async clone (args) {
+  //     let {dir, gitdir, workdir} = args
+  //     return git.clone(new git.Git({fs, dir, gitdir, workdir}), args)
+  //   }
+  // }
 }
 self.API = API
 

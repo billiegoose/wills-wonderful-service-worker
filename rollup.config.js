@@ -26,6 +26,24 @@ export default [
     input: 'src/client.js',
     output: {
       file: 'dist/client.js',
+      format: 'es'
+    },
+    plugins: [
+      resolve({
+        module: true,
+        main: true,
+        browser: true,
+      }),
+      commonjs(),
+      babel({
+        exclude: 'node_modules/**',
+      }),
+    ],
+  },
+  {
+    input: 'demo/test.js',
+    output: {
+      file: 'demo/test.min.js',
       format: 'umd',
       name: 'test'
     },
