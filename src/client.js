@@ -2,10 +2,12 @@ import { Comlink } from 'comlinkjs'
 export let fs = null
 export let fsEvents = null
 export let git = null
-export { Comlink }
-export async function establishComlink () {
-  let worker = (await navigator.serviceWorker.getRegistrations())[0].active
 
+export async function waitForWorker () {
+  let reg = await navigator.serviceWorker.ready
+  console.log('Ready!')
+  let worker = reg.active
+  console.log('worker =', worker)
   let channel = new MessageChannel();
   worker.postMessage({type: 'comlink/expose', name: 'fs'}, [channel.port2])
   fs = Comlink.proxy(channel.port1)
@@ -17,6 +19,25 @@ export async function establishComlink () {
   channel = new MessageChannel();
   worker.postMessage({type: 'comlink/expose', name: 'git'}, [channel.port2])
   git = Comlink.proxy(channel.port1)
+}
+
+export async function setupServiceWorker () {
+  if (!navigator.serviceWorker) {
+    console.log(`Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser.`)
+    return
+  }
+  console.log(`Registering...`)
+  let reg = await navigator.serviceWorker.register('./wwsw.js', {scope: '/'})
+  console.log(`Registered.`)
+  reg.addEventListener('updatefound', () => {
+    console.log(`Update found...`)
+    let newWorker = reg.installing
+    newWorker.addEventListener('statechange', () => {
+      console.log(newWorker.state)
+      if (newWorker.state === 'activated') {
+      }
+    })
+  })
 }
 
 function proxyEventEmitter (com) {
