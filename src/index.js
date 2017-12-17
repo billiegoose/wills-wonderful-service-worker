@@ -3,8 +3,11 @@ window = global
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 importScripts('https://gundb-git-app-manager.herokuapp.com/gun.js')
 importScripts('https://unpkg.com/isomorphic-git@0.0.31/dist/service-worker-bundle.umd.min.js')
+import { Comlink } from 'comlinkjs'
+import pify from 'pify' // commonjs module
 import Mime from './mime'
 import { fs, fsReady } from './fs'
+import { useMyFilesystem } from './git'
 import { rimraf } from './rimraf'
 import { serve } from './serve'
 global.fs = fs
@@ -12,6 +15,29 @@ console.log('fs =', fs)
 console.log('git =', git)
 console.log('OmniPath =', OmniPath)
 console.log('gun =', Gun)
+
+let API = {
+  fs: pify(fs),
+  Events: fs.Events,
+  git: useMyFilesystem(git)
+  // git: {
+  //   async init (args) {
+  //     let {dir, gitdir, workdir} = args
+  //     console.log({fs, dir, gitdir, workdir}, args)
+  //     return git.init(new git.Git({fs, dir, gitdir, workdir}), args)
+  //   },
+  //   async clone (args) {
+  //     let {dir, gitdir, workdir} = args
+  //     return git.clone(new git.Git({fs, dir, gitdir, workdir}), args)
+  //   }
+  // }
+}
+self.API = API
+
+// for fun
+fs.Events.once('foobar', function (data) {
+  console.log('foobar = ', data)
+})
 
 async function getGun () {
   global.gun = Gun(['https://gundb-git-app-manager.herokuapp.com/gun']);
@@ -101,7 +127,11 @@ self.addEventListener('activate', event => {
 self.addEventListener('message', async event => {
   await fsReady
   console.log(event.data)
-  if (event.data.type === 'clone') {
+  if (event.data.type === 'comlink/expose') {
+    console.log(event.ports[0].postMessage);
+    // Comlink.expose(myfs, event.ports[0]);
+    Comlink.expose(self.API[event.data.name], event.ports[0]);
+  } else if (event.data.type === 'clone') {
     clone(event.data).then(async () => {
       console.log('Done cloning.')
       // Tell all local browser windows and workers the clone is complete.

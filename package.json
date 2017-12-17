@@ -8,7 +8,7 @@
   "main": "dist/wwsw.js",
   "scripts": {
     "clean": "shx mkdir -p dist && shx rm -rf dist/*",
-    "build": "shx mkdir -p dist && rollup --output.format=es src/index.js > dist/wwsw.js",
+    "build": "rollup -c",
     "test": "npm run build",
     "docs": "projectz && mos",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
@@ -21,8 +21,17 @@
     "url": "https://github.com/wmhilton/wills-wonderful-service-worker"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "comlinkjs": "^2.3.0",
+    "pify": "^3.0.0",
     "rollup": "^0.52.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "semantic-release": "^8.2.0",
     "shx": "^0.2.2",
-    "semantic-release": "^8.2.0"
+    "swivel": "^4.0.3"
   }
 }
