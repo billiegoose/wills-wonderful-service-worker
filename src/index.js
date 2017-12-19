@@ -2,7 +2,7 @@ global = self
 window = global
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 importScripts('https://gundb-git-app-manager.herokuapp.com/gun.js')
-importScripts('https://unpkg.com/isomorphic-git@0.0.31/dist/service-worker-bundle.umd.min.js')
+importScripts('https://unpkg.com/isomorphic-git@0.0.33/dist/service-worker-bundle.umd.min.js')
 import { Comlink } from 'comlinkjs'
 import pify from 'pify' // commonjs module
 import Mime from './mime'

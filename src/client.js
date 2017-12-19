@@ -18,7 +18,7 @@ export async function waitForWorker () {
 
   channel = new MessageChannel();
   worker.postMessage({type: 'comlink/expose', name: 'git'}, [channel.port2])
-  git = Comlink.proxy(channel.port1)
+  git = proxyGit(Comlink.proxy(channel.port1))
 }
 
 export async function setupServiceWorker () {
@@ -65,3 +65,22 @@ function proxyEventEmitter (com) {
     }
   }
 }
+
+function proxyGit(obj) {
+  const handler = {
+    get(target, propKey, receiver) {
+      return function (...args) {
+        // Wrap callbacks
+        for (let i = 0; i < args.length; i++) {
+          if (typeof args[i] === 'function') {
+            args[i] = Comlink.proxyValue(args[i])
+          }
+        }
+        let result = target[propKey](...args);
+        return result;
+      }
+    }
+  };
+  return new Proxy(obj, handler);
+}
+

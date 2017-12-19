@@ -8,7 +8,7 @@
   "main": "dist/wwsw.js",
   "scripts": {
     "clean": "shx mkdir -p dist && shx rm -rf dist/*",
-    "build": "rollup -c",
+    "build": "rollup -c && shx cp dist/wwsw.js demo/wwsw.js",
     "test": "npm run build",
     "docs": "projectz && mos",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"

@@ -1092,9 +1092,7 @@ function useMyFilesystem(obj) {
       if (typeof targetValue === 'function') {
         return function (...args) {
           // I reject your "fs" and substitute my own.
-          if (args.length > 0 && typeof args[0] === 'object') {
-            args[0] = new git.Git(Object.assign(args[0], { fs }));
-          }
+          Object.assign(args[0], { fs });
           let result = targetValue.apply(this, args);
           return result;
         };
@@ -1435,7 +1433,7 @@ global = self;
 window = global;
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js');
 importScripts('https://gundb-git-app-manager.herokuapp.com/gun.js');
-importScripts('https://unpkg.com/isomorphic-git@0.0.31/dist/service-worker-bundle.umd.min.js');
+importScripts('https://unpkg.com/isomorphic-git@0.0.33/dist/service-worker-bundle.umd.min.js');
 global.fs = fs;
 console.log('fs =', fs);
 console.log('git =', git);
