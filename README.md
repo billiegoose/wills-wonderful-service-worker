@@ -1,9 +1,16 @@
 # wills-wonderful-service-worker
-ServiceWorker that does stuff
+The ServiceWorker that does a lot of stuff
 
-## Like?
+# Building
+```
+npm install
+npm run build
+npm start
+```
 
-TBD
+# Notes
+
+ECMAScript modules still aren't supported in Workers, so we bundle the worker into a UMD script with rollup.
 
 ## License
 

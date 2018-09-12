@@ -1,5 +1,5 @@
 // Step 1. Setup BrowserFS
-importScripts('https://unpkg.com/browserfs@1.4.3/dist/browserfs.js')
+importScripts('https://unpkg.com/browserfs@2.0.0/dist/browserfs.js')
 //importScripts('https://cdnjs.cloudflare.com/ajax/libs/eventemitter3/2.0.3/index.min.js')
 import EventEmitter from './eventemitter-2015.js'
 

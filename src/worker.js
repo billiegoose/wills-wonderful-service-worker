@@ -1,36 +1,25 @@
-global = self
-window = global
+self.global = self
+self.window = global
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 importScripts('https://gundb-git-app-manager.herokuapp.com/gun.js')
 importScripts('https://unpkg.com/isomorphic-git@0.0.33/dist/service-worker-bundle.umd.min.js')
-import { Comlink } from 'comlinkjs'
-import pify from 'pify' // commonjs module
-import Mime from './mime'
+importScripts('https://unpkg.com/comlink@3.0.3/umd/comlink.js')
+importScripts('https://unpkg.com/isomorphic-git@0.35.2/dist/bundle.umd.min.js')
+import { pfy } from './pfy'
 import { fs, fsReady } from './fs'
-import { useMyFilesystem } from './git'
 import { rimraf } from './rimraf'
 import { serve } from './serve'
 global.fs = fs
+git.plugins.set('fs', fs)
 console.log('fs =', fs)
 console.log('git =', git)
 console.log('OmniPath =', OmniPath)
 console.log('gun =', Gun)
 
 let API = {
-  fs: pify(fs),
+  fs: pfy(fs),
   Events: fs.Events,
-  git: useMyFilesystem(git)
-  // git: {
-  //   async init (args) {
-  //     let {dir, gitdir, workdir} = args
-  //     console.log({fs, dir, gitdir, workdir}, args)
-  //     return git.init(new git.Git({fs, dir, gitdir, workdir}), args)
-  //   },
-  //   async clone (args) {
-  //     let {dir, gitdir, workdir} = args
-  //     return git.clone(new git.Git({fs, dir, gitdir, workdir}), args)
-  //   }
-  // }
+  git
 }
 self.API = API
 

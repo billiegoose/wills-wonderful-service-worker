@@ -1,16 +1,10 @@
 {
+  "plugins": [
+    "@babel/plugin-proposal-object-rest-spread"
+  ],
   "presets": [
     [
-      "env",
-      {
-        "modules": false,
-        "targets": {
-          "browsers": "Chrome 63"
-        }
-      }
+      "@babel/preset-env"
     ]
-  ],
-  "plugins": [
-    "external-helpers"
   ]
 }

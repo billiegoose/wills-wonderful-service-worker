@@ -1,5 +1,6 @@
 import { fs, fsReady } from './fs'
 import { renderIndex } from './render-index.js'
+import Mime from './mime'
 export async function serve (path) {
   await fsReady
   return new Promise(function(resolve, reject) {

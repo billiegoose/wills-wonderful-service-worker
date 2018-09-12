@@ -1,4 +1,4 @@
-import { Comlink } from 'comlinkjs'
+import * as Comlink from 'https://unpkg.com/comlink@3.0.3/comlink.js'
 export let fs = null
 export let fsEvents = null
 export let git = null
@@ -21,13 +21,13 @@ export async function waitForWorker () {
   git = proxyGit(Comlink.proxy(channel.port1))
 }
 
-export async function setupServiceWorker () {
+export async function setupServiceWorker (filepath) {
   if (!navigator.serviceWorker) {
     console.log(`Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser.`)
     return
   }
   console.log(`Registering...`)
-  let reg = await navigator.serviceWorker.register('./wwsw.js', {scope: '/'})
+  let reg = await navigator.serviceWorker.register(filepath, {scope: '/'})
   console.log(`Registered.`)
   reg.addEventListener('updatefound', () => {
     console.log(`Update found...`)

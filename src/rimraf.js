@@ -1,12 +1,6 @@
 // Because isaacs "rimraf" is too Node-specific
 import { fs } from './fs'
-const pfy = function (fn) {
-  return function (a, cb) {
-    return new Promise(function(resolve, reject) {
-      fn(a, (err, result) => err ? reject(err) : resolve(result))
-    });
-  }
-}
+import { pfy } from './pfy'
 
 const readdir = pfy(fs.readdir.bind(fs))
 const unlink = pfy(fs.unlink.bind(fs))
