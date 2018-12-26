@@ -1,24 +1,14 @@
-import * as Comlink from 'https://unpkg.com/comlink@3.0.3/comlink.js'
-export let fs = null
-export let fsEvents = null
-export let git = null
+import MagicPortal from 'https://unpkg.com/magic-portal@1.0.0/dist/index.es6.js'
+import { fs } from './fs.js'
+import Emitter from './eventemitter-2015.js'
 
-export async function waitForWorker () {
-  let reg = await navigator.serviceWorker.ready
-  console.log('Ready!')
-  let worker = reg.active
-  console.log('worker =', worker)
-  let channel = new MessageChannel();
-  worker.postMessage({type: 'comlink/expose', name: 'fs'}, [channel.port2])
-  fs = Comlink.proxy(channel.port1)
-
-  channel = new MessageChannel();
-  worker.postMessage({type: 'comlink/expose', name: 'Events'}, [channel.port2])
-  fsEvents = proxyEventEmitter(Comlink.proxy(channel.port1))
-
-  channel = new MessageChannel();
-  worker.postMessage({type: 'comlink/expose', name: 'git'}, [channel.port2])
-  git = proxyGit(Comlink.proxy(channel.port1))
+export default function client (filepath) {
+  const worker = new Worker(filepath)
+  const emitter = new Emitter()
+  const portal = new MagicPortal(worker)
+  portal.set('emitter', emitter, {void: ['emit']})
+  git = await portal.get('git')
+  return { emitter, fs, git }
 }
 
 export async function setupServiceWorker (filepath) {
@@ -39,48 +29,3 @@ export async function setupServiceWorker (filepath) {
     })
   })
 }
-
-function proxyEventEmitter (com) {
-  return {
-    on (namespace, callback) {
-      com.on(namespace, Comlink.proxyValue(callback))
-    },
-    addEventListener (namespace, callback) {
-      com.addEventListener(namespace, Comlink.proxyValue(callback))
-    },
-    off (namespace, callback) {
-      com.off(namespace, Comlink.proxyValue(callback))
-    },
-    removeEventListener (namespace, callback) {
-      com.removeEventListener(namespace, Comlink.proxyValue(callback))
-    },
-    once (namespace, callback) {
-      com.once(namespace, Comlink.proxyValue(callback))
-    },
-    emit (namespace, data) {
-      com.emit(namespace, data)
-    },
-    postMessage (namespace, data) {
-      com.postMessage(namespace, data)
-    }
-  }
-}
-
-function proxyGit(obj) {
-  const handler = {
-    get(target, propKey, receiver) {
-      return function (...args) {
-        // Wrap callbacks
-        for (let i = 0; i < args.length; i++) {
-          if (typeof args[i] === 'function') {
-            args[i] = Comlink.proxyValue(args[i])
-          }
-        }
-        let result = target[propKey](...args);
-        return result;
-      }
-    }
-  };
-  return new Proxy(obj, handler);
-}
-

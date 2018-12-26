@@ -69,22 +69,8 @@ class EventEmitter {
   }
 }
 
-// Step 1. Setup BrowserFS
-importScripts('https://unpkg.com/browserfs@2.0.0/dist/browserfs.js');
-//importScripts('https://cdnjs.cloudflare.com/ajax/libs/eventemitter3/2.0.3/index.min.js')
-const fsReady = new Promise(function(resolve, reject) {
-  BrowserFS.configure({
-    fs: "MountableFileSystem",
-    options: {
-      "/": {
-        fs: "IndexedDB",
-        options: {}
-      }
-    }
-  }, (err) => err ? reject(err) : resolve());
-});
-// Step 2. Export fs
-let fs = BrowserFS.BFSRequire('fs');
+importScripts('https://unpkg.com/@isomorphic-git/lightning-fs@2.0.0/dist/lightning-fs.min.js');
+let fs = new LightningFS("fs");
 // Wrap fs so we can monitor all file operations
 fs.Events = new EventEmitter();
 
@@ -945,7 +931,6 @@ process.umask = function() { return 0; };
 });
 
 async function serve (path) {
-  await fsReady;
   return new Promise(function(resolve, reject) {
     fs.stat(path, (err, stats) => {
       if (err) {
@@ -1055,7 +1040,6 @@ async function getGun () {
 }
 
 async function getUUID () {
-  await fsReady;
   return await new Promise((resolve, reject) => {
     fs.readFile('.uuid', 'utf8', async (err, contents) => {
       if (typeof contents === 'string' && contents.length > 1) return resolve(contents)
@@ -1073,7 +1057,6 @@ async function getUUID () {
 }
 
 async function clone ({ref, repo, name}) {
-  await fsReady;
   function handleProgress (e) {
     let msg = {
       type: 'status',
@@ -1094,7 +1077,6 @@ async function clone ({ref, repo, name}) {
 }
 
 async function UpdatedDirectoryList (event) {
-  await fsReady;
   return new Promise(function(resolve, reject) {
     fs.readdir('/', (err, files) => {
       files = files.filter(x => !x.startsWith('.')).filter(x => x !== 'index.html');
@@ -1111,7 +1093,6 @@ async function UpdatedDirectoryList (event) {
 
 self.addEventListener('install', event => {
   return event.waitUntil((async () => {
-    await fsReady;
     let res = await fetch('/index.html');
     let text = await res.text();
     await new Promise(function(resolve, reject) {
@@ -1127,7 +1108,6 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   return event.waitUntil((async () => {
-    await fsReady;
     console.log('claim()');
     await self.clients.claim();
     console.log('claim() complete');
@@ -1135,7 +1115,6 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('message', async event => {
-  await fsReady;
   console.log(event.data);
   if (event.data.type === 'comlink/expose') {
     console.log(event.ports[0].postMessage);

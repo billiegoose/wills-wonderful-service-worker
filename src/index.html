@@ -7,7 +7,9 @@
 <button id="doThings">Do Things</button>
 
 <script type="module">
-  import { setupServiceWorker, waitForWorker, fs, fsEvents, git } from './client.js'
+  import Client from './client.js'
+  const client = await Client()
+  
   function log (str) {
     var div = document.createElement('h4')
     div.innerHTML = str
@@ -15,18 +17,20 @@
   }
 
   export async function registerWWSW () {
-    await setupServiceWorker('./worker.umd.js')
+    if (!navigator.serviceWorker) {
+      console.log(`Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser.`)
+      return
+    }
+    let reg = await navigator.serviceWorker.register('./worker.umd.js', {scope: '/'})
+    // reg.addEventListener('updatefound', () => {
+    //   let newWorker = reg.installing
+    //   newWorker.addEventListener('statechange', () => {
+    //     if (newWorker.state === 'activated') {
+    //     }
+    //   })
+    // })
   }
 
-  export async function connectWithComlink () {
-    await waitForWorker()
-    fsEvents.on('write', function (args) {
-      console.log('Received: ', args)
-    })
-    fsEvents.on('mkdir', function (args) {
-      console.log('Received: ', args)
-    })
-  }
 
   export async function doThings () {
     console.log(await fs.readFile('.uuid', 'utf8'))
