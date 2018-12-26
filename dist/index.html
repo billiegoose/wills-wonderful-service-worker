@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>WWSW.js</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic@6.4.0/picnic.min.css">
+<h1>WWSW.js Test Page</h1>
+<button id="registerWWSW">Register WWSW</button>
+<button id="doThings">Do Things</button>
+
+<script src='./wwsw.js'></script>
+<script type="module">
+  function log (str) {
+    var div = document.createElement('h4')
+    div.innerHTML = str
+    document.body.appendChild(div)
+  }
+
+  export async function registerWWSW () {
+    try {
+      await WWSW.setupServiceWorker('./wwsw.js')
+    } catch {
+      if (err.message === 'unsupported') {
+        console.log(`Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser.`)
+      }
+    }
+  }
+
+  export async function doThings () {
+    console.log('never finishes?')
+    const {emitter, fs, git} = await WWSW.client('./wwsw.js')
+    window.fs = fs
+    window.git = git
+    window.emitter = emitter
+    console.log(fs, git, emitter)
+    console.log(await fs.writeFile('/.uuid', 'hello'))
+    console.log(await fs.readdir('/'))
+    console.log(await git.init({dir: '/'}))
+  }
+
+  document.getElementById('registerWWSW').addEventListener('click', registerWWSW)
+  document.getElementById('doThings').addEventListener('click', doThings)
+</script>

@@ -1,16 +1,10 @@
 // Because isaacs "rimraf" is too Node-specific
-import { fs } from './fs'
-import { pfy } from './pfy'
-
-const readdir = pfy(fs.readdir.bind(fs))
-const unlink = pfy(fs.unlink.bind(fs))
-const rmdir = pfy(fs.rmdir.bind(fs))
 
 // It's elegant in it's naivety
-export async function rimraf (path) {
+export async function rimraf (path, fs) {
   try {
     // First assume path is itself a file
-    await unlink(path)
+    await fs.unlink(path)
     // if that worked we're done
     return
   } catch (err) {
@@ -19,7 +13,7 @@ export async function rimraf (path) {
   }
   // Knowing path is a directory,
   // first, assume everything inside path is a file.
-  let files = await readdir(path)
+  let files = await fs.readdir(path)
   for (let file of files) {
     let child = path + '/' + file
     try {
@@ -29,11 +23,11 @@ export async function rimraf (path) {
     }
   }
   // Assume what's left are directories and recurse.
-  let dirs = await readdir(path)
+  let dirs = await fs.readdir(path)
   for (let dir of dirs) {
     let child = path + '/' + dir
-    await rimraf(child)
+    await rimraf(child, fs)
   }
   // Finally, delete the empty directory
-  await rmdir(path)
+  await fs.rmdir(path)
 }

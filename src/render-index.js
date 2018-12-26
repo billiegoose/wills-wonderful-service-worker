@@ -1,3 +1,5 @@
+const OmniPath = require('omnipath')
+
 const toPaths = (dirname) => {
   let pieces = dirname.replace(/^\//, '').split('/').filter(x => x !== '')
   pieces.unshift('')

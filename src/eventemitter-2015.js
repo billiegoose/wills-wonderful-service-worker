@@ -1,6 +1,6 @@
 // Because sometimes you have to write somethign yourself to make it right.
 
-export default class {
+export class EventEmitter {
   constructor () {
     this.listeners = new Map()
     this.onceListeners = new Map()

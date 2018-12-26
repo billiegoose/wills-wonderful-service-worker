@@ -1,9 +1,9 @@
 export default [
   {
-    input: 'src/worker.js',
+    input: 'src/index.js',
     output: {
-      file: 'src/worker.umd.js',
-      format: 'umd'
+      file: 'dist/wwsw.js',
+      format: 'esm'
     },
   },
 ]
